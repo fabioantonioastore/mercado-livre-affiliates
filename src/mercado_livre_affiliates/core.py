@@ -2,6 +2,8 @@ import re
 from typing import Any
 
 from playwright.async_api import async_playwright, BrowserContext
+from playwright._impl._errors import Error
+
 
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
 
@@ -16,14 +18,17 @@ class MercadoLivreAffiliates:
             return self._context
         if self.__playwright is None:
             self.__playwright = await async_playwright().start()
-        self._context = await self.__playwright.chromium.launch_persistent_context(
-            user_data_dir="./profile",
-            headless=True,
-            args=["--disable-blink-features=AutomationControlled"],
-            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-            locale="pt-BR",
-        )
-        return self._context
+        try:
+            self._context = await self.__playwright.chromium.launch_persistent_context(
+                user_data_dir="./profile",
+                headless=True,
+                args=["--disable-blink-features=AutomationControlled"],
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+            )
+            return self._context
+        except Error:
+            raise RuntimeError("Execute: playwrigh install chromium")
 
     async def _add_cookies(self, cookies: list[Any]) -> None:
         context = await self._get_persistent_context()
