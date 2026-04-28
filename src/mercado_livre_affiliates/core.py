@@ -1,5 +1,6 @@
 import re
 from typing import Any
+import asyncio
 
 from playwright.async_api import async_playwright, BrowserContext
 
@@ -45,7 +46,7 @@ class MercadoLivreAffiliates:
             pass
         url_input = page.get_by_role("textbox", name="Insira 1 ou mais URLs separados por 1 linha")
         await url_input.wait_for()
-        await url_input.type(product_url, delay=100)
+        await url_input.type(product_url, delay=3)
         generate_button = page.get_by_role("button", name="Gerar")
         await generate_button.click()
         link_element = page.get_by_text(re.compile(r"^https://"))
