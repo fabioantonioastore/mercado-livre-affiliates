@@ -25,7 +25,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "playwright==1.58.0"
+  "playwright==1.58.0",
+  "aioimaplib==2.0.1"
 ]
 
 [project.urls]
