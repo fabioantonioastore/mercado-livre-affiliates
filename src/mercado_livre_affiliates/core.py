@@ -32,7 +32,7 @@ class MercadoLivreAffiliates:
         try:
             self._context = await self.__playwright.chromium.launch_persistent_context(
                 user_data_dir="./profile",
-                headless=False,
+                headless=True,
                 args=["--disable-blink-features=AutomationControlled"],
                 user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
                 locale="pt-BR",
