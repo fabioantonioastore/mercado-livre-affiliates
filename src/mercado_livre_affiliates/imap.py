@@ -1,5 +1,6 @@
+from typing import Any
+
 from aioimaplib import IMAP4_SSL  # type: ignore
-from asyncio import Lock
 
 
 class GmailClient:
@@ -7,7 +8,6 @@ class GmailClient:
         self.__gmail = gmail
         self.__app_password = app_password
         self.__client: IMAP4_SSL | None = None
-        self.__lock = Lock()
 
     @property
     def gmail(self) -> str:
@@ -29,12 +29,11 @@ class GmailClient:
         return client
 
     async def get_client(self) -> IMAP4_SSL:
-        async with self.__lock:
-            if self.__client and await self.__is_alive():
-                return self.__client
-            await self.close()
-            self.__client = await self.__connect()
+        if self.__client and await self.__is_alive():
             return self.__client
+        await self.close()
+        self.__client = await self.__connect()
+        return self.__client
 
     async def close(self) -> None:
         if self.__client is not None:
@@ -44,6 +43,12 @@ class GmailClient:
                 pass
             finally:
                 self.__client = None
+
+    async def __aenter__(self) -> IMAP4_SSL:
+        return await self.get_client()
+
+    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        await self.close()
 
     def __repr__(self) -> str:
         return "GmailClient()"

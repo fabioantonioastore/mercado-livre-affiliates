@@ -1,11 +1,12 @@
 import re
-from asyncio import Lock
+from typing import Any
+from asyncio import sleep
 
 from playwright.async_api import async_playwright, BrowserContext, Page
 from playwright._impl._errors import Error
 
 from imap import GmailClient
-
+from utils import fetch_last_email_content, extract_verification_code_from_email
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
@@ -16,30 +17,35 @@ class MercadoLivreAffiliates:
     def __init__(self, gmail: str, app_password: str) -> None:
         self.__playwright = None
         self._context = None
-        self._gmail_client = GmailClient(gmail, app_password)
-        self._lock = Lock()
+        self._gmail = gmail
+        self._app_password = app_password
+
+    async def add_cookies(self, cookies: list[Any]) -> None:
+        context = await self.__get_context()
+        await context.add_cookies(cookies)
 
     async def __get_context(self) -> BrowserContext:
-        async with self._lock:
-            if isinstance(self._context, BrowserContext):
-                return self._context
-            if self.__playwright is None:
-                self.__playwright = await async_playwright().start()
-            try:
-                self._context = await self.__playwright.chromium.launch_persistent_context(
-                    user_data_dir="./profile",
-                    headless=False,
-                    args=["--disable-blink-features=AutomationControlled"],
-                    user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-                    locale="pt-BR",
-                )
-                return self._context
-            except Error:
-                raise RuntimeError("Execute: playwrigh install chromium")
+        if isinstance(self._context, BrowserContext):
+            return self._context
+        if self.__playwright is None:
+            self.__playwright = await async_playwright().start()
+        try:
+            self._context = await self.__playwright.chromium.launch_persistent_context(
+                user_data_dir="./profile",
+                headless=False,
+                args=["--disable-blink-features=AutomationControlled"],
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+                timezone_id="America/Sao_Paulo",
+                viewport={"width": 1280, "height": 720},
+            )
+            return self._context
+        except Error:
+            raise RuntimeError("Execute: playwrigh install chromium")
 
     async def __is_logged(self, page: Page | None = None) -> bool:
         created_page = False
-        if not page:
+        if page is None:
             context = await self.__get_context()
             page = await context.new_page()
             created_page = True
@@ -53,20 +59,41 @@ class MercadoLivreAffiliates:
     async def __login(self, page: Page | None = None) -> None:
         created_page = False
         context = await self.__get_context()
-        if not page:
+        if page is None:
             page = await context.new_page()
             created_page = True
         try:
-            await page.goto(url=LOGIN_URL)
-            email_input = page.get_by_role(role="textbox", name="E-mail ou telefone")
-            await email_input.wait_for(state="visible")
-            await email_input.fill(value=self._gmail_client.gmail)
-            continue_button = page.get_by_role(role="button", name="Continuar")
-            await continue_button.wait_for(state="visible")
-            await continue_button.click()
-            email_verification_option = page.get_by_role(role="button", name="E-mail Vamos enviar um código")
-            await email_verification_option.wait_for(state="visible")
-            await email_verification_option.click()
+            async with GmailClient(self._gmail, self._app_password) as gmail_client:
+                await page.goto(url=LOGIN_URL)
+                email_input = page.get_by_role(
+                    role="textbox", name="E-mail ou telefone"
+                )
+                await email_input.wait_for(state="visible")
+                await email_input.fill(value=self._gmail)
+                continue_button = page.get_by_role(role="button", name="Continuar")
+                await continue_button.wait_for(state="visible")
+                await continue_button.click()
+                email_verification_option = page.get_by_role(
+                    role="button", name="E-mail Vamos enviar um código"
+                )
+                await email_verification_option.wait_for(state="visible")
+                await email_verification_option.click()
+                await sleep(10)
+                email_content = await fetch_last_email_content(gmail_client)
+                if email_content is None:
+                    raise RuntimeError("Not content email fetched")
+                verification_code = extract_verification_code_from_email(email_content)
+                if verification_code is None:
+                    raise RuntimeError("Not verification code extracted")
+                for i in range(len(verification_code)):
+                    digit_input = page.get_by_role(
+                        role="textbox", name=f"Dígito {i + 1}"
+                    )
+                    await digit_input.wait_for(state="visible")
+                    await digit_input.fill(verification_code[i])
+                submit_button = page.get_by_test_id(test_id="submit-button")
+                await submit_button.wait_for(state="visible")
+                await submit_button.click()
         finally:
             if created_page:
                 await page.close()
@@ -96,8 +123,6 @@ class MercadoLivreAffiliates:
             await self._context.close()
         if self.__playwright:
             await self.__playwright.stop()
-        if self._gmail_client:
-            await self._gmail_client.close()
 
     def __repr__(self) -> str:
         return "MercadoLivreAffiliates()"
