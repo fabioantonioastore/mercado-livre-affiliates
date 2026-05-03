@@ -16,21 +16,21 @@ AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
 class MercadoLivreAffiliates:
     def __init__(self, gmail: str, app_password: str) -> None:
         self.__playwright = None
-        self._context = None
-        self._gmail = gmail
-        self._app_password = app_password
+        self.__context = None
+        self.__gmail = gmail
+        self.__app_password = app_password
 
     async def add_cookies(self, cookies: list[Any]) -> None:
         context = await self.__get_context()
         await context.add_cookies(cookies)
 
     async def __get_context(self) -> BrowserContext:
-        if isinstance(self._context, BrowserContext):
-            return self._context
+        if isinstance(self.__context, BrowserContext):
+            return self.__context
         if self.__playwright is None:
             self.__playwright = await async_playwright().start()
         try:
-            self._context = await self.__playwright.chromium.launch_persistent_context(
+            self.__context = await self.__playwright.chromium.launch_persistent_context(
                 user_data_dir="./profile",
                 headless=True,
                 args=["--disable-blink-features=AutomationControlled"],
@@ -39,7 +39,7 @@ class MercadoLivreAffiliates:
                 timezone_id="America/Sao_Paulo",
                 viewport={"width": 1280, "height": 720},
             )
-            return self._context
+            return self.__context
         except Error:
             raise RuntimeError("Execute: playwrigh install chromium")
 
@@ -63,13 +63,13 @@ class MercadoLivreAffiliates:
             page = await context.new_page()
             created_page = True
         try:
-            async with GmailClient(self._gmail, self._app_password) as gmail_client:
+            async with GmailClient(self.__gmail, self.__app_password) as gmail_client:
                 await page.goto(url=LOGIN_URL)
                 email_input = page.get_by_role(
                     role="textbox", name="E-mail ou telefone"
                 )
                 await email_input.wait_for(state="visible")
-                await email_input.fill(value=self._gmail)
+                await email_input.fill(value=self.__gmail)
                 continue_button = page.get_by_role(role="button", name="Continuar")
                 await continue_button.wait_for(state="visible")
                 await continue_button.click()
@@ -119,8 +119,8 @@ class MercadoLivreAffiliates:
             await page.close()
 
     async def close(self) -> None:
-        if self._context:
-            await self._context.close()
+        if self.__context:
+            await self.__context.close()
         if self.__playwright:
             await self.__playwright.stop()
 
