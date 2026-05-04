@@ -3,10 +3,10 @@ from typing import Any
 from asyncio import sleep
 
 from playwright.async_api import async_playwright, BrowserContext, Page
-from playwright._impl._errors import Error
 
 from .imap import GmailClient
 from .utils import fetch_last_email_content, extract_verification_code_from_email
+from .errors import LoginError, ChromiumLaunchError
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
@@ -14,16 +14,32 @@ AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
 
 
 class MercadoLivreAffiliates:
-    def __init__(self, gmail: str, app_password: str, headless: bool = False) -> None:
+    def __init__(self, gmail: str, app_password: str) -> None:
         self.__playwright = None
         self.__context = None
         self.__gmail = gmail
         self.__app_password = app_password
-        self.__headless = headless
 
     async def add_cookies(self, cookies: list[Any]) -> None:
         context = await self.__get_context()
         await context.add_cookies(cookies)
+
+    async def manual_login(self) -> None:
+        if self.__playwright is None:
+            self.__playwright = await async_playwright().start()
+        context = await self.__playwright.chromium.launch_persistent_context(
+                user_data_dir="./profile",
+                headless=False,
+                args=["--disable-blink-features=AutomationControlled"],
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+                timezone_id="America/Sao_Paulo",
+                viewport={"width": 1280, "height": 720},
+            )
+        page = await context.new_page()
+        await page.goto(LOGIN_URL)
+        await page.pause()
+        await context.close()
 
     async def __get_context(self) -> BrowserContext:
         if isinstance(self.__context, BrowserContext):
@@ -33,7 +49,7 @@ class MercadoLivreAffiliates:
         try:
             self.__context = await self.__playwright.chromium.launch_persistent_context(
                 user_data_dir="./profile",
-                headless=self.__headless,
+                headless=True,
                 args=["--disable-blink-features=AutomationControlled"],
                 user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
                 locale="pt-BR",
@@ -41,8 +57,8 @@ class MercadoLivreAffiliates:
                 viewport={"width": 1280, "height": 720},
             )
             return self.__context
-        except Error:
-            raise RuntimeError("Execute: playwrigh install chromium")
+        except Exception:
+            raise ChromiumLaunchError("Execute: playwrigh install chromium")
 
     async def __is_logged(self, page: Page | None = None) -> bool:
         created_page = False
@@ -82,10 +98,10 @@ class MercadoLivreAffiliates:
                 await sleep(10)
                 email_content = await fetch_last_email_content(gmail_client)
                 if email_content is None:
-                    raise RuntimeError("Not content email fetched")
+                    raise LoginError("Not content email fetched")
                 verification_code = extract_verification_code_from_email(email_content)
                 if verification_code is None:
-                    raise RuntimeError("Not verification code extracted")
+                    raise LoginError("Not verification code extracted")
                 for i in range(len(verification_code)):
                     digit_input = page.get_by_role(
                         role="textbox", name=f"Dígito {i + 1}"
@@ -95,6 +111,8 @@ class MercadoLivreAffiliates:
                 submit_button = page.get_by_test_id(test_id="submit-button")
                 await submit_button.wait_for(state="visible")
                 await submit_button.click()
+        except Exception:
+            raise LoginError("A error occurs during login")
         finally:
             if created_page:
                 await page.close()

@@ -3,5 +3,6 @@
 # SPDX-License-Identifier: MIT
 
 from .core import MercadoLivreAffiliates
+from . import errors
 
-__all__ = ["MercadoLivreAffiliates"]
+__all__ = ["MercadoLivreAffiliates", "errors"]
