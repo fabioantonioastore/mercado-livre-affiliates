@@ -63,6 +63,11 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
+[tool.hatch.envs.default]
+post-install-commands = [
+  "playwright install chromium"
+]
+
 [tool.hatch.build.targets.sdist]
 only-packages = true
 packages = [
