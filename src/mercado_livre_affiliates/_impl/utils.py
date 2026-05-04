@@ -4,6 +4,14 @@ import email
 from aioimaplib import IMAP4_SSL  # type: ignore
 
 
+def remove_white_spaces(string: str) -> str:
+    new_string = ""
+    for character in string:
+        if character != " ":
+            new_string += character
+    return new_string
+
+
 def extract_verification_code_from_email(text: str) -> str | None:
     match = re.search(r"\b\d{6}\b", text)
     if match:

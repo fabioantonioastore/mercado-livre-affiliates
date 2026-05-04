@@ -5,7 +5,11 @@ from asyncio import sleep
 from playwright.async_api import async_playwright, BrowserContext, Page
 
 from .imap import GmailClient
-from .utils import fetch_last_email_content, extract_verification_code_from_email
+from .utils import (
+    fetch_last_email_content,
+    extract_verification_code_from_email,
+    remove_white_spaces,
+)
 from ..errors import LoginError, ChromiumLaunchError
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
@@ -18,7 +22,7 @@ class MercadoLivreAffiliates:
         self.__playwright = None
         self.__context = None
         self.__gmail = gmail
-        self.__app_password = app_password
+        self.__app_password = remove_white_spaces(app_password)
 
     async def add_cookies(self, cookies: list[Any]) -> None:
         context = await self.__get_context()
@@ -28,14 +32,14 @@ class MercadoLivreAffiliates:
         if self.__playwright is None:
             self.__playwright = await async_playwright().start()
         context = await self.__playwright.chromium.launch_persistent_context(
-                user_data_dir="./profile",
-                headless=False,
-                args=["--disable-blink-features=AutomationControlled"],
-                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-                locale="pt-BR",
-                timezone_id="America/Sao_Paulo",
-                viewport={"width": 1280, "height": 720},
-            )
+            user_data_dir="./profile",
+            headless=False,
+            args=["--disable-blink-features=AutomationControlled"],
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+            locale="pt-BR",
+            timezone_id="America/Sao_Paulo",
+            viewport={"width": 1280, "height": 720},
+        )
         page = await context.new_page()
         await page.goto(LOGIN_URL)
         await page.pause()
