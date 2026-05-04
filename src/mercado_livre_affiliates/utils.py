@@ -40,5 +40,5 @@ async def fetch_last_email_content(client: IMAP4_SSL) -> str | None:
         payload = message.get_payload(decode=True)
         if payload:
             content = payload.decode(errors="ignore")  # type: ignore
-            return extract_email_code(content)  # type: ignore
+            return content  # type: ignore
     return None
