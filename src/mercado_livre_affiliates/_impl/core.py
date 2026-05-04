@@ -6,7 +6,7 @@ from playwright.async_api import async_playwright, BrowserContext, Page
 
 from .imap import GmailClient
 from .utils import fetch_last_email_content, extract_verification_code_from_email
-from .errors import LoginError, ChromiumLaunchError
+from ..errors import LoginError, ChromiumLaunchError
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
