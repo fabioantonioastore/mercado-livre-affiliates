@@ -14,11 +14,12 @@ AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
 
 
 class MercadoLivreAffiliates:
-    def __init__(self, gmail: str, app_password: str) -> None:
+    def __init__(self, gmail: str, app_password: str, headless: bool = False) -> None:
         self.__playwright = None
         self.__context = None
         self.__gmail = gmail
         self.__app_password = app_password
+        self.__headless = headless
 
     async def add_cookies(self, cookies: list[Any]) -> None:
         context = await self.__get_context()
@@ -32,7 +33,7 @@ class MercadoLivreAffiliates:
         try:
             self.__context = await self.__playwright.chromium.launch_persistent_context(
                 user_data_dir="./profile",
-                headless=True,
+                headless=self.__headless,
                 args=["--disable-blink-features=AutomationControlled"],
                 user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
                 locale="pt-BR",
