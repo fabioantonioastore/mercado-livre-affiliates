@@ -40,6 +40,7 @@ class MercadoLivreAffiliates:
         await page.goto(LOGIN_URL)
         await page.pause()
         await context.close()
+        await sleep(10)
 
     async def __get_context(self) -> BrowserContext:
         if isinstance(self.__context, BrowserContext):
