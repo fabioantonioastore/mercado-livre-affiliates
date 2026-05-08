@@ -6,9 +6,21 @@ class LoginError(MercadoLivreAffiliateException):
     pass
 
 
-class ChromiumLaunchError(MercadoLivreAffiliateException):
+class CreateContextError(MercadoLivreAffiliateException):
     pass
 
 
 class GenerateAffiliateLinkError(MercadoLivreAffiliateException):
+    pass
+
+
+class ManualLoginError(MercadoLivreAffiliateException):
+    pass
+
+
+class AddCookiesError(MercadoLivreAffiliateException):
+    pass
+
+
+class VerifyLoginError(MercadoLivreAffiliateException):
     pass

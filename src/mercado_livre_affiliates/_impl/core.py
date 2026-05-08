@@ -25,29 +25,35 @@ class MercadoLivreAffiliates:
         self.__app_password = remove_white_spaces(app_password)
 
     async def add_cookies(self, cookies: list[Any]) -> None:
-        context = await self.__get_context()
-        await context.add_cookies(cookies)
+        try:
+            context = await self.__get_context()
+            await context.add_cookies(cookies)
+        except Exception as error:
+            raise AddCookiesError(f"Failed to add cookies: {error}")
 
     async def manual_login(self) -> None:
-        if self.__playwright is None:
-            self.__playwright = await async_playwright().start()
-        context = await self.__playwright.chromium.launch_persistent_context(
-            user_data_dir="./profile",
-            headless=False,
-            args=["--disable-blink-features=AutomationControlled"],
-            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-            locale="pt-BR",
-            timezone_id="America/Sao_Paulo",
-            viewport={"width": 1280, "height": 720},
-        )
-        page = await context.new_page()
-        await page.goto(LOGIN_URL)
-        await page.pause()
-        await context.close()
-        await sleep(10)
+        try:
+            if self.__playwright is None:
+                self.__playwright = await async_playwright().start()
+            context = await self.__playwright.chromium.launch_persistent_context(
+                user_data_dir="./profile",
+                headless=False,
+                args=["--disable-blink-features=AutomationControlled"],
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+                timezone_id="America/Sao_Paulo",
+                viewport={"width": 1280, "height": 720},
+            )
+            page = await context.new_page()
+            await page.goto(LOGIN_URL)
+            await page.pause()
+            await context.close()
+            await sleep(10)
+        except Exception as error:
+            raise ManualLoginError(f"Failed to make manual login: {error}")
 
     async def __get_context(self) -> BrowserContext:
-        if isinstance(self.__context, BrowserContext):
+        if self.__context is not None:
             return self.__context
         if self.__playwright is None:
             self.__playwright = await async_playwright().start()
@@ -62,8 +68,8 @@ class MercadoLivreAffiliates:
                 viewport={"width": 1280, "height": 720},
             )
             return self.__context
-        except Exception:
-            raise ChromiumLaunchError("Execute: playwrigh install chromium")
+        except Exception as error:
+            raise CreateContextError(f"Failed to create context: {error}")
 
     async def __is_logged(self, page: Page | None = None) -> bool:
         created_page = False
@@ -74,6 +80,8 @@ class MercadoLivreAffiliates:
         try:
             await page.goto(url=AFFILIATE_HUB_URL)
             return "login" not in page.url.lower()
+        except Exception as error:
+            raise VerifyLoginError(f"Failed to verify if is logged: {error}")
         finally:
             if created_page:
                 await page.close()
@@ -116,39 +124,38 @@ class MercadoLivreAffiliates:
                 submit_button = page.get_by_test_id(test_id="submit-button")
                 await submit_button.wait_for(state="visible")
                 await submit_button.click()
-        except Exception:
-            raise LoginError("A error occurs during login")
+        except Exception as error:
+            raise LoginError(f"Failed to make login: {error}")
         finally:
             if created_page:
                 await page.close()
 
     async def generate_affiliate_link(self, product_url: str) -> str | None:
+        context = await self.__get_context()
+        page = await context.new_page()
+        if not await self.__is_logged(page=page):
+            await self.__login(page=page)
         try:
-            context = await self.__get_context()
-            page = await context.new_page()
-            if not await self.__is_logged(page=page):
-                await self.__login(page=page)
-            try:
-                await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
-                url_input = page.get_by_role(
-                    role="textbox", name="Insira 1 ou mais URLs separados por 1 linha"
-                )
-                await url_input.wait_for(state="visible")
-                await url_input.fill(value=product_url)
-                generate_button = page.get_by_role(role="button", name="Gerar")
-                await generate_button.click()
-                link_element = page.get_by_text(re.compile(r"^https://"))
-                await link_element.wait_for(state="visible")
-                return await link_element.first.text_content()
-            finally:
-                await page.close()
+            await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
+            url_input = page.get_by_role(
+                role="textbox", name="Insira 1 ou mais URLs separados por 1 linha"
+            )
+            await url_input.wait_for(state="visible")
+            await url_input.fill(value=product_url)
+            generate_button = page.get_by_role(role="button", name="Gerar")
+            await generate_button.click()
+            link_element = page.get_by_text(re.compile(r"^https://"))
+            await link_element.wait_for(state="visible")
+            return await link_element.first.text_content()
         except Exception as error:
-            raise GenerateAffiliateLinkError(f"Failed to generate affiliate link: {error}") from error
+            raise GenerateAffiliateLinkError(f"Failed to generate affiliate link: {error}")
+        finally:
+            await page.close()
 
     async def close(self) -> None:
-        if self.__context:
+        if self.__context is not None:
             await self.__context.close()
-        if self.__playwright:
+        if self.__playwright is not None:
             await self.__playwright.stop()
 
     def __repr__(self) -> str:
