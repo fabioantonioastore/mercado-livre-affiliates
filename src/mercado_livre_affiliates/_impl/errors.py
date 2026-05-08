@@ -24,3 +24,7 @@ class AddCookiesError(MercadoLivreAffiliateException):
 
 class VerifyLoginError(MercadoLivreAffiliateException):
     pass
+
+
+class MeliProductFinalUrlError(MercadoLivreAffiliateException):
+    pass

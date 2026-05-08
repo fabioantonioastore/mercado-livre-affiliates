@@ -151,6 +151,21 @@ class MercadoLivreAffiliates:
             raise GenerateAffiliateLinkError(f"Failed to generate affiliate link: {error}")
         finally:
             await page.close()
+    
+    async def get_meli_product_url(self, meli_url: str) -> str:
+        context = await self.__get_context()
+        page = await context.new_page()
+        if not await self.__is_logged(page=page):
+            await self.__login(page=page)
+        try:
+            await page.goto(meli_url)
+            button_input = page.get_by_role(role="link", name="Ir para produto")
+            await button_input.wait_for(state="visible")
+            await button_input.click()
+            return page.url
+        except Exception as error:
+            raise MeliProductFinalUrlError(f"Failed to get {meli_url} final url: {error}")
+            
 
     async def close(self) -> None:
         if self.__context is not None:
