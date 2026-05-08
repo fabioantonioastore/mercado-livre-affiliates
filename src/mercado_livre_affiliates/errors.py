@@ -1,6 +1,14 @@
-class LoginError(Exception):
+class MercadoLivreAffiliateException(Exception):
     pass
 
 
-class ChromiumLaunchError(Exception):
+class LoginError(MercadoLivreAffiliateException):
+    pass
+
+
+class ChromiumLaunchError(MercadoLivreAffiliateException):
+    pass
+
+
+class GenerateAffiliateLinkError(MercadoLivreAffiliateException):
     pass

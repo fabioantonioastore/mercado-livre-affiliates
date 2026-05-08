@@ -10,7 +10,7 @@ from .utils import (
     extract_verification_code_from_email,
     remove_white_spaces,
 )
-from ..errors import LoginError, ChromiumLaunchError
+from ..errors import *
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
@@ -123,24 +123,27 @@ class MercadoLivreAffiliates:
                 await page.close()
 
     async def generate_affiliate_link(self, product_url: str) -> str | None:
-        context = await self.__get_context()
-        page = await context.new_page()
-        if not await self.__is_logged(page=page):
-            await self.__login(page=page)
         try:
-            await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
-            url_input = page.get_by_role(
-                role="textbox", name="Insira 1 ou mais URLs separados por 1 linha"
-            )
-            await url_input.wait_for(state="visible")
-            await url_input.fill(value=product_url)
-            generate_button = page.get_by_role(role="button", name="Gerar")
-            await generate_button.click()
-            link_element = page.get_by_text(re.compile(r"^https://"))
-            await link_element.wait_for(state="visible")
-            return await link_element.first.text_content()
-        finally:
-            await page.close()
+            context = await self.__get_context()
+            page = await context.new_page()
+            if not await self.__is_logged(page=page):
+                await self.__login(page=page)
+            try:
+                await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
+                url_input = page.get_by_role(
+                    role="textbox", name="Insira 1 ou mais URLs separados por 1 linha"
+                )
+                await url_input.wait_for(state="visible")
+                await url_input.fill(value=product_url)
+                generate_button = page.get_by_role(role="button", name="Gerar")
+                await generate_button.click()
+                link_element = page.get_by_text(re.compile(r"^https://"))
+                await link_element.wait_for(state="visible")
+                return await link_element.first.text_content()
+            finally:
+                await page.close()
+        except Exception as error:
+            raise GenerateAffiliateLinkError(f"Failed to generate affiliate link: {error}") from error
 
     async def close(self) -> None:
         if self.__context:
