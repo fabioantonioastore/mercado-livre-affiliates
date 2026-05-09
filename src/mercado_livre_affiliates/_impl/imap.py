@@ -1,4 +1,4 @@
-from typing import Any
+from types import TracebackType
 
 from aioimaplib import IMAP4_SSL  # type: ignore
 
@@ -47,7 +47,7 @@ class GmailClient:
     async def __aenter__(self) -> IMAP4_SSL:
         return await self.get_client()
 
-    async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+    async def __aexit__(self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None) -> None:
         await self.close()
 
     def __repr__(self) -> str:
