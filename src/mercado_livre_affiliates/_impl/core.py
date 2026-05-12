@@ -10,7 +10,7 @@ from .utils import (
     extract_verification_code_from_email,
     remove_white_spaces,
 )
-from .errors import *
+from .exceptions import *
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
