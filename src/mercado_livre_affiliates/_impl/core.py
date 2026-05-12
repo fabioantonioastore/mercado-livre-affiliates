@@ -71,7 +71,7 @@ class MercadoLivreAffiliates:
         except Exception as error:
             raise CreateContextError(f"Failed to create context: {error}")
 
-    async def __is_logged(self, page: Page | None = None) -> bool:
+    async def is_logged(self, page: Page | None = None) -> bool:
         created_page = False
         if page is None:
             context = await self.__get_context()
@@ -133,7 +133,7 @@ class MercadoLivreAffiliates:
     async def generate_affiliate_link(self, product_url: str) -> str | None:
         context = await self.__get_context()
         page = await context.new_page()
-        if not await self.__is_logged(page=page):
+        if not await self.is_logged(page=page):
             await self.__login(page=page)
         try:
             await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
@@ -155,7 +155,7 @@ class MercadoLivreAffiliates:
     async def get_meli_product_url(self, meli_url: str) -> str:
         context = await self.__get_context()
         page = await context.new_page()
-        if not await self.__is_logged(page=page):
+        if not await self.is_logged(page=page):
             await self.__login(page=page)
         try:
             await page.goto(meli_url)
