@@ -47,6 +47,7 @@ class MercadoLivreAffiliates:
             page = await context.new_page()
             await page.goto(LOGIN_URL)
             await page.pause()
+            await page.close()
             await context.close()
             await sleep(10)
         except Exception as error:
@@ -164,7 +165,9 @@ class MercadoLivreAffiliates:
             await button_input.click()
             return page.url
         except Exception as error:
-            raise MeliProductFinalUrlError(f"Failed to get {meli_url} final url: {error}")
+            raise MeliProductUrlError(f"Failed to get {meli_url} final url: {error}")
+        finally:
+            await page.close()
             
 
     async def close(self) -> None:

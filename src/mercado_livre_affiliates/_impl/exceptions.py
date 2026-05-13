@@ -26,5 +26,5 @@ class VerifyLoginError(MercadoLivreAffiliateException):
     pass
 
 
-class MeliProductFinalUrlError(MercadoLivreAffiliateException):
+class MeliProductUrlError(MercadoLivreAffiliateException):
     pass
