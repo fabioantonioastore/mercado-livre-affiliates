@@ -87,7 +87,7 @@ class MercadoLivreAffiliates:
             if created_page:
                 await page.close()
 
-    async def __login(self, page: Page | None = None) -> None:
+    async def login(self, page: Page | None = None) -> None:
         created_page = False
         context = await self.__get_context()
         if page is None:
@@ -135,7 +135,7 @@ class MercadoLivreAffiliates:
         context = await self.__get_context()
         page = await context.new_page()
         if not await self.is_logged(page=page):
-            await self.__login(page=page)
+            await self.login(page=page)
         try:
             await page.goto(LINK_BUILDER_URL, wait_until="networkidle")
             url_input = page.get_by_role(
@@ -157,7 +157,7 @@ class MercadoLivreAffiliates:
         context = await self.__get_context()
         page = await context.new_page()
         if not await self.is_logged(page=page):
-            await self.__login(page=page)
+            await self.login(page=page)
         try:
             await page.goto(meli_url)
             button_input = page.get_by_role(role="link", name="Ir para produto")
