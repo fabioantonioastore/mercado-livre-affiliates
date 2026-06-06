@@ -1,8 +1,6 @@
 # SPDX-FileCopyrightText: 2026-present U.N. Owen <void@some.where>
 #
 # SPDX-License-Identifier: MIT
-
-from ._impl.core import MercadoLivreAffiliates
-from ._impl import exceptions
+from ._impl import MercadoLivreAffiliates, exceptions
 
 __all__ = ["MercadoLivreAffiliates", "exceptions"]
