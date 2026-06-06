@@ -3,6 +3,7 @@ import asyncio
 from uuid import uuid4, UUID
 from contextlib import AbstractAsyncContextManager
 from types import TracebackType
+from typing import Sequence
 
 from playwright.async_api import BrowserContext, Page, async_playwright
 
@@ -39,6 +40,9 @@ class MercadoLivreAffiliatesSession(
     async def close(self) -> None:
         if not self.__browser_context.is_closed():
             await self.__browser_context.close()
+    
+    def add_cookies(self, cookies: Sequence[str]) -> None:
+        self.__browser_context.add_cookies(cookies=cookies) # type: ignore
 
     async def is_logged(self, page: Page | None = None) -> bool:
         create_page = False

@@ -1,7 +1,6 @@
 aioimaplib==2.0.1
 dotenv==0.9.9
 greenlet==3.5.1
--e git+https://github.com/fabioantonioastore/mercado-livre-affiliates.git@151543a6b9e860af32c1f4993bbbe2c7c8eb304d#egg=mercado_livre_affiliates
 playwright==1.60.0
 pyee==13.0.1
 python-dotenv==1.2.2
