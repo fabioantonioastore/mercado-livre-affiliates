@@ -1,48 +1,40 @@
 import re
 import asyncio
-from uuid import uuid4, UUID
 from contextlib import AbstractAsyncContextManager
+from pathlib import Path
 from types import TracebackType
-from typing import Sequence
+from typing import Self, Sequence
 
-from playwright.async_api import BrowserContext, Page, async_playwright
+from playwright.async_api import Playwright, BrowserContext, Page, async_playwright
 
-from ..services import Gmail
-from ..exceptions import IsSessionLoggedError, LoginError, GenerateAffiliateLinkError
-from ..utils.mercado_livre_affiliates import (
-    extract_mercado_livre_verification_code_from_mail,
-)
+from ._services import Gmail
+from .exceptions import IsLoggedError, LoginError, ManualLoginError, GenerateAffiliateLinkError
+from ._utils import extract_mercado_livre_verification_code_from_mail
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
 LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
 
 
-class MercadoLivreAffiliatesSession(
-    AbstractAsyncContextManager["MercadoLivreAffiliatesSession"]
-):
+class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates"]):
     def __init__(
-        self, gmail_address: str, app_password: str, browser_context: BrowserContext
+        self,
+        gmail_address: str,
+        app_password: str,
+        user_data_dir: str | Path = "./UserData",
     ) -> None:
         self.__gmail_address = gmail_address
         self.__app_password = app_password
-        self.__browser_context = browser_context
-        self.__uuid = uuid4()
-
-    @property
-    def uuid(self) -> UUID:
-        return self.__uuid
+        self.__user_data_dir = user_data_dir
+        self.__playwright: Playwright
+        self.__browser_context: BrowserContext
 
     @property
     def gmail_address(self) -> str:
         return self.__gmail_address
 
-    async def close(self) -> None:
-        if not self.__browser_context.is_closed():
-            await self.__browser_context.close()
-    
-    def add_cookies(self, cookies: Sequence[str]) -> None:
-        self.__browser_context.add_cookies(cookies=cookies) # type: ignore
+    async def add_cookies(self, cookies: Sequence[str]) -> None:
+        await self.__browser_context.add_cookies(cookies=cookies)  # type: ignore
 
     async def is_logged(self, page: Page | None = None) -> bool:
         create_page = False
@@ -53,9 +45,7 @@ class MercadoLivreAffiliatesSession(
             await page.goto(url=AFFILIATE_HUB_URL)
             return "login" not in page.url.lower()
         except Exception as error:
-            raise IsSessionLoggedError(
-                f"Failed on verify if session is logged: {error}"
-            )
+            raise IsLoggedError(f"Failed on verify if is logged: {error}")
         finally:
             if create_page:
                 await page.close()
@@ -127,7 +117,7 @@ class MercadoLivreAffiliatesSession(
             await asyncio.sleep(5)
             await self.__browser_context.add_cookies(cookies=await browser_context.cookies())  # type: ignore
         except Exception as error:
-            raise LoginError(f"Failed to make manual login: {error}")
+            raise ManualLoginError(f"Failed to make manual login: {error}")
         finally:
             await page.close()
             await browser_context.close()
@@ -160,7 +150,25 @@ class MercadoLivreAffiliatesSession(
         finally:
             await page.close()
 
-    async def __aenter__(self) -> "MercadoLivreAffiliatesSession":
+    async def __start(self) -> None:
+        self.__playwright = await async_playwright().start()
+        self.__browser_context = await self.__playwright.chromium.launch_persistent_context(
+            user_data_dir=self.__user_data_dir,
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"],
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
+            locale="pt-BR",
+            timezone_id="America/Sao_Paulo",
+            viewport={"width": 1280, "height": 720},
+        )
+
+    async def __stop(self) -> None:
+        if not self.__browser_context.is_closed():
+            await self.__browser_context.close()
+        await self.__playwright.stop()
+
+    async def __aenter__(self) -> Self:
+        await self.__start()
         return self
 
     async def __aexit__(
@@ -169,4 +177,7 @@ class MercadoLivreAffiliatesSession(
         exc_value: BaseException | None,
         traceback: TracebackType | None,
     ) -> bool | None:
-        await self.close()
+        await self.__stop()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(gmail_address={self.gmail_address}, app_password=*)"
