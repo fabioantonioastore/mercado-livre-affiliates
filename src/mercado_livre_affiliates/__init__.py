@@ -2,6 +2,6 @@
 #
 # SPDX-License-Identifier: MIT
 from ._client import MercadoLivreAffiliates
-from . import exceptions
+from . import exceptions, events
 
-__all__ = ["MercadoLivreAffiliates", "exceptions"]
+__all__ = ["MercadoLivreAffiliates", "exceptions", "events"]

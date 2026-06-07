@@ -16,3 +16,7 @@ class ManualLoginError(MercadoLivreAffiliatesException):
 
 class GenerateAffiliateLinkError(MercadoLivreAffiliatesException):
     pass
+
+
+class EventFunctionTaskError(MercadoLivreAffiliatesException):
+    pass

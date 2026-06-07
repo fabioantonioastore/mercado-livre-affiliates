@@ -3,13 +3,14 @@ import asyncio
 from contextlib import AbstractAsyncContextManager
 from pathlib import Path
 from types import TracebackType
-from typing import Self, Sequence
+from typing import Self, Sequence, Callable, Coroutine, Any
 
 from playwright.async_api import Playwright, BrowserContext, Page, async_playwright
 
 from ._services import Gmail
 from .exceptions import IsLoggedError, LoginError, ManualLoginError, GenerateAffiliateLinkError
 from ._utils import extract_mercado_livre_verification_code_from_mail
+from .events import DayOffers, LightningOffers, Event, EventResponse
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
@@ -28,10 +29,31 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         self.__user_data_dir = user_data_dir
         self.__playwright: Playwright
         self.__browser_context: BrowserContext
+        self.__day_offers_event = DayOffers()
+        self.__lightning_offers_event = LightningOffers()
 
     @property
     def gmail_address(self) -> str:
         return self.__gmail_address
+    
+    async def register_event_function(self, event: type[Event], function: Callable[["MercadoLivreAffiliates", EventResponse], Coroutine[Any, Any, None]]) -> None:
+        if issubclass(event, DayOffers):
+            self.__day_offers_event.register_event_function(function=function)
+            if not self.__day_offers_event.started:
+                await self.__day_offers_event.start(client=self)
+            return
+        if issubclass(event, LightningOffers):
+            self.__lightning_offers_event.register_event_function(function=function)
+            if not self.__lightning_offers_event.started:
+                await self.__lightning_offers_event.start(client=self)
+
+    async def remove_event_function(self, function: Callable[["MercadoLivreAffiliates", EventResponse], Coroutine[Any, Any, None]]) -> None:
+        self.__day_offers_event.remove_event_function(function=function)
+        if self.__day_offers_event.total_event_functions == 0:
+            await self.__day_offers_event.stop()
+        self.__lightning_offers_event.remove_event_function(function=function)
+        if self.__lightning_offers_event.total_event_functions == 0:
+            await self.__lightning_offers_event.stop()
 
     async def add_cookies(self, cookies: Sequence[str]) -> None:
         await self.__browser_context.add_cookies(cookies=cookies)  # type: ignore
@@ -163,6 +185,10 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         )
 
     async def __stop(self) -> None:
+        if self.__day_offers_event.started:
+            await self.__day_offers_event.stop()
+        if self.__lightning_offers_event.started:
+            await self.__lightning_offers_event.stop()
         if not self.__browser_context.is_closed():
             await self.__browser_context.close()
         await self.__playwright.stop()
