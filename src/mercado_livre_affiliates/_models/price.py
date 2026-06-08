@@ -2,5 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class EventResponse:
-    pass
+class Price:
+    reais: int
+    cents: int

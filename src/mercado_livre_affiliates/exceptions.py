@@ -20,3 +20,11 @@ class GenerateAffiliateLinkError(MercadoLivreAffiliatesException):
 
 class EventFunctionTaskError(MercadoLivreAffiliatesException):
     pass
+
+
+class EventNotStartedError(MercadoLivreAffiliatesException):
+    pass
+
+
+class EventLogicError(MercadoLivreAffiliatesException):
+    pass

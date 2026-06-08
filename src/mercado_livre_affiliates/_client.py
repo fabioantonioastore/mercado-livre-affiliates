@@ -3,14 +3,26 @@ import asyncio
 from contextlib import AbstractAsyncContextManager
 from pathlib import Path
 from types import TracebackType
-from typing import Self, Sequence, Callable, Coroutine, Any
+from typing import Self, Sequence, Callable, Coroutine, Any, overload
 
-from playwright.async_api import Playwright, BrowserContext, Page, async_playwright
+from playwright.async_api import (
+    Playwright,
+    BrowserContext,
+    Page,
+    Browser,
+    async_playwright,
+)
 
 from ._services import Gmail
-from .exceptions import IsLoggedError, LoginError, ManualLoginError, GenerateAffiliateLinkError
-from ._utils import extract_mercado_livre_verification_code_from_mail
-from .events import DayOffers, LightningOffers, Event, EventResponse
+from .exceptions import (
+    IsLoggedError,
+    LoginError,
+    ManualLoginError,
+    GenerateAffiliateLinkError,
+)
+from ._utils.client import extract_mercado_livre_verification_code_from_mail
+from .events import DealsOfTheDay, LightningDeals
+from ._models import EventResponse, DealOfTheDayProduct, LightningDealProduct
 
 LOGIN_URL = "https://www.mercadolivre.com/jms/mlb/lgz/msl/login"
 AFFILIATE_HUB_URL = "https://www.mercadolivre.com.br/afiliados/hub"
@@ -27,27 +39,57 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         self.__gmail_address = gmail_address
         self.__app_password = app_password
         self.__user_data_dir = user_data_dir
-        self.__playwright: Playwright
-        self.__browser_context: BrowserContext
-        self.__day_offers_event = DayOffers()
-        self.__lightning_offers_event = LightningOffers()
+        self.__playwright: Playwright | None = None
+        self.__browser_context: BrowserContext | None = None
+        self.__event_browser: Browser | None = None
+        self.__event_browser_context: BrowserContext | None = None
+        self.__day_offers_event = DealsOfTheDay()
+        self.__lightning_offers_event = LightningDeals()
 
     @property
     def gmail_address(self) -> str:
         return self.__gmail_address
     
-    async def register_event_function(self, event: type[Event], function: Callable[["MercadoLivreAffiliates", EventResponse], Coroutine[Any, Any, None]]) -> None:
-        if issubclass(event, DayOffers):
-            self.__day_offers_event.register_event_function(function=function)
+    @overload
+    async def register_event_function(
+        self,
+        event: type[DealsOfTheDay],
+        function: Callable[
+            ["MercadoLivreAffiliates", DealOfTheDayProduct], Coroutine[Any, Any, None]
+        ],
+    ) -> None: ...
+
+    @overload
+    async def register_event_function(
+        self,
+        event: type[LightningDeals],
+        function: Callable[
+            ["MercadoLivreAffiliates", LightningDealProduct], Coroutine[Any, Any, None]
+        ],
+    ) -> None: ...
+
+    async def register_event_function(
+        self,
+        event: type[DealsOfTheDay] | type[LightningDeals],
+        function:
+            Callable[["MercadoLivreAffiliates", DealOfTheDayProduct], Coroutine[Any, Any, None]] |
+            Callable[["MercadoLivreAffiliates", LightningDealProduct], Coroutine[Any, Any, None]],
+    ) -> None:
+        if issubclass(event, DealsOfTheDay):
+            self.__day_offers_event.register_event_function(function=function)  # type: ignore[arg-type]
             if not self.__day_offers_event.started:
                 await self.__day_offers_event.start(client=self)
             return
-        if issubclass(event, LightningOffers):
-            self.__lightning_offers_event.register_event_function(function=function)
-            if not self.__lightning_offers_event.started:
-                await self.__lightning_offers_event.start(client=self)
+        self.__lightning_offers_event.register_event_function(function=function)  # type: ignore[arg-type]
+        if not self.__lightning_offers_event.started:
+            await self.__lightning_offers_event.start(client=self)
 
-    async def remove_event_function(self, function: Callable[["MercadoLivreAffiliates", EventResponse], Coroutine[Any, Any, None]]) -> None:
+    async def remove_event_function(
+        self,
+        function: Callable[
+            ["MercadoLivreAffiliates", EventResponse], Coroutine[Any, Any, None]
+        ],
+    ) -> None:
         self.__day_offers_event.remove_event_function(function=function)
         if self.__day_offers_event.total_event_functions == 0:
             await self.__day_offers_event.stop()
@@ -60,8 +102,9 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
 
     async def is_logged(self, page: Page | None = None) -> bool:
         create_page = False
+        browser_context = await self.__get_browser_context()
         if page is None:
-            page = await self.__browser_context.new_page()
+            page = await browser_context.new_page()
             create_page = True
         try:
             await page.goto(url=AFFILIATE_HUB_URL)
@@ -74,8 +117,9 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
 
     async def login(self, page: Page | None = None) -> None:
         created_page = False
+        browser_context = await self.__get_browser_context()
         if page is None:
-            page = await self.__browser_context.new_page()
+            page = await browser_context.new_page()
         try:
             async with Gmail(
                 gmail_address=self.gmail_address, app_password=self.__app_password
@@ -137,7 +181,7 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             await page.goto(LOGIN_URL)
             await page.pause()
             await asyncio.sleep(5)
-            await self.__browser_context.add_cookies(cookies=await browser_context.cookies())  # type: ignore
+            await (await self.__get_browser_context()).add_cookies(cookies=await browser_context.cookies())  # type: ignore
         except Exception as error:
             raise ManualLoginError(f"Failed to make manual login: {error}")
         finally:
@@ -147,7 +191,8 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             await playwright.stop()
 
     async def generate_affiliate_link(self, product_url: str) -> str:
-        page = await self.__browser_context.new_page()
+        browser_context = await self.__get_browser_context()
+        page = await browser_context.new_page()
         if not await self.is_logged(page=page):
             await self.login()
         try:
@@ -172,9 +217,35 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         finally:
             await page.close()
 
-    async def __start(self) -> None:
-        self.__playwright = await async_playwright().start()
-        self.__browser_context = await self.__playwright.chromium.launch_persistent_context(
+    async def _get_event_browser_context(self) -> BrowserContext:
+        if self.__event_browser_context is None:
+            self.__event_browser_context = await self.__create_event_browser_context()
+        return self.__event_browser_context
+
+    async def __create_event_browser_context(self) -> BrowserContext:
+        if self.__event_browser is None:
+            playwright = await self.__get_playwright()
+            self.__event_browser = await playwright.chromium.launch(
+                headless=True, args=["--disable-blink-features=AutomationControlled"]
+            )
+        if self.__event_browser_context is None:
+            self.__event_browser_context = await self.__event_browser.new_context(
+                viewport={"width": 1280, "height": 720},
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+                timezone_id="America/Sao_Paulo",
+            )
+        return self.__event_browser_context
+
+    async def __get_browser_context(self) -> BrowserContext:
+        if self.__browser_context is None:
+            self.__browser_context = await self.__create_browser_context()
+        return self.__browser_context
+
+    async def __create_browser_context(self) -> BrowserContext:
+        if self.__playwright is None:
+            raise ValueError("Application not started yet")
+        return await self.__playwright.chromium.launch_persistent_context(
             user_data_dir=self.__user_data_dir,
             headless=True,
             args=["--disable-blink-features=AutomationControlled"],
@@ -184,14 +255,37 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             viewport={"width": 1280, "height": 720},
         )
 
+    async def __start(self) -> None:
+        self.__playwright = await async_playwright().start()
+
     async def __stop(self) -> None:
         if self.__day_offers_event.started:
             await self.__day_offers_event.stop()
         if self.__lightning_offers_event.started:
             await self.__lightning_offers_event.stop()
-        if not self.__browser_context.is_closed():
+        if (
+            self.__event_browser_context is not None
+            and not self.__event_browser_context.is_closed()
+        ):
+            await self.__event_browser_context.close()
+        if self.__event_browser is not None:
+            await self.__event_browser.close()
+        if (
+            self.__browser_context is not None
+            and not self.__browser_context.is_closed()
+        ):
             await self.__browser_context.close()
-        await self.__playwright.stop()
+        if self.__playwright is not None:
+            await self.__playwright.stop()
+        self.__event_browser_context = None
+        self.__event_browser = None
+        self.__browser_context = None
+        self.__playwright = None
+
+    async def __get_playwright(self) -> Playwright:
+        if self.__playwright is None:
+            raise ValueError("Application not started yet")
+        return self.__playwright
 
     async def __aenter__(self) -> Self:
         await self.__start()
