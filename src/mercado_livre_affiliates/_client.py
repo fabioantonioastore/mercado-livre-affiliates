@@ -1,7 +1,6 @@
 import re
 import asyncio
 from contextlib import AbstractAsyncContextManager
-from pathlib import Path
 from types import TracebackType
 from typing import Self, Sequence, Callable, Coroutine, Any, overload
 
@@ -10,6 +9,7 @@ from playwright.async_api import (
     BrowserContext,
     Page,
     Browser,
+    Cookie,
     async_playwright,
 )
 
@@ -31,24 +31,16 @@ LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
 
 class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates"]):
     def __init__(
-        self,
-        gmail_address: str,
-        app_password: str,
-        user_data_dir: str | Path = "./UserData",
+        self
     ) -> None:
-        self.__gmail_address = gmail_address
-        self.__app_password = app_password
-        self.__user_data_dir = user_data_dir
+        self.__gmail_address: str
+        self.__app_password: str
         self.__playwright: Playwright | None = None
+        self.__browser: Browser | None = None
         self.__browser_context: BrowserContext | None = None
-        self.__event_browser: Browser | None = None
         self.__event_browser_context: BrowserContext | None = None
         self.__day_offers_event = DealsOfTheDay()
         self.__lightning_offers_event = LightningDeals()
-
-    @property
-    def gmail_address(self) -> str:
-        return self.__gmail_address
     
     @overload
     async def register_event_function(
@@ -84,6 +76,10 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         if not self.__lightning_offers_event.started:
             await self.__lightning_offers_event.start(client=self)
 
+    def set_user_account(self, gmail_address: str, app_password: str) -> None:
+        self.__gmail_address = gmail_address
+        self.__app_password = app_password
+
     async def remove_event_function(
         self,
         function: Callable[
@@ -99,6 +95,10 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
 
     async def add_cookies(self, cookies: Sequence[str]) -> None:
         await self.__browser_context.add_cookies(cookies=cookies)  # type: ignore
+
+    async def get_cookies(self) -> list[Cookie]:
+        browser_context = await self.__get_browser_context()
+        return await browser_context.cookies()
 
     async def is_logged(self, page: Page | None = None) -> bool:
         create_page = False
@@ -122,14 +122,14 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             page = await browser_context.new_page()
         try:
             async with Gmail(
-                gmail_address=self.gmail_address, app_password=self.__app_password
+                gmail_address=self.__gmail_address, app_password=self.__app_password
             ) as gmail:
                 await page.goto(url=LOGIN_URL)
                 email_input = page.get_by_role(
                     role="textbox", name="E-mail ou telefone"
                 )
                 await email_input.wait_for(state="visible")
-                await email_input.fill(value=self.gmail_address)
+                await email_input.fill(value=self.__gmail_address)
                 continue_button = page.get_by_role(role="button", name="Continuar")
                 await continue_button.wait_for(state="visible")
                 await continue_button.click()
@@ -223,19 +223,15 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         return self.__event_browser_context
 
     async def __create_event_browser_context(self) -> BrowserContext:
-        if self.__event_browser is None:
-            playwright = await self.__get_playwright()
-            self.__event_browser = await playwright.chromium.launch(
-                headless=True, args=["--disable-blink-features=AutomationControlled"]
-            )
         if self.__event_browser_context is None:
-            self.__event_browser_context = await self.__event_browser.new_context(
-                viewport={"width": 1280, "height": 720},
-                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
-                locale="pt-BR",
-                timezone_id="America/Sao_Paulo",
-            )
+            self.__event_browser_context = await self.__create_browser_context()
         return self.__event_browser_context
+    
+    async def __create_browser(self) -> Browser:
+        playwright = await self.__get_playwright()
+        return await playwright.chromium.launch(
+            headless=True, args=["--disable-blink-features=AutomationControlled"]
+        )
 
     async def __get_browser_context(self) -> BrowserContext:
         if self.__browser_context is None:
@@ -243,17 +239,14 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         return self.__browser_context
 
     async def __create_browser_context(self) -> BrowserContext:
-        if self.__playwright is None:
-            raise ValueError("Application not started yet")
-        return await self.__playwright.chromium.launch_persistent_context(
-            user_data_dir=self.__user_data_dir,
-            headless=True,
-            args=["--disable-blink-features=AutomationControlled"],
-            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
-            locale="pt-BR",
-            timezone_id="America/Sao_Paulo",
-            viewport={"width": 1280, "height": 720},
-        )
+        if self.__browser is None:
+            self.__browser = await self.__create_browser()
+        return await self.__browser.new_context(
+                viewport={"width": 1280, "height": 720},
+                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
+                locale="pt-BR",
+                timezone_id="America/Sao_Paulo",
+            )
 
     async def __start(self) -> None:
         self.__playwright = await async_playwright().start()
@@ -268,8 +261,6 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             and not self.__event_browser_context.is_closed()
         ):
             await self.__event_browser_context.close()
-        if self.__event_browser is not None:
-            await self.__event_browser.close()
         if (
             self.__browser_context is not None
             and not self.__browser_context.is_closed()
@@ -278,7 +269,6 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         if self.__playwright is not None:
             await self.__playwright.stop()
         self.__event_browser_context = None
-        self.__event_browser = None
         self.__browser_context = None
         self.__playwright = None
 
@@ -300,4 +290,4 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         await self.__stop()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(gmail_address={self.gmail_address}, app_password=*)"
+        return f"{self.__class__.__name__}()"

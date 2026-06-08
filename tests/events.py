@@ -24,7 +24,6 @@ async def lightining_offers_test(
 
 async def main() -> None:
     async with MercadoLivreAffiliates(
-        gmail_address="astore.a.fabio@gmail.com", app_password="test"
     ) as mercado_livre_affiliates:
         await mercado_livre_affiliates.register_event_function(
             event=LightningDeals, function=lightining_offers_test
