@@ -28,6 +28,9 @@ class Event(ABC, Generic[EventResponseT]):
         self.__browser_context: BrowserContext | None = None
         self._event = asyncio.Event()
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
+    
     @property
     def total_event_functions(self) -> int:
         return len(self.__event_functions)
@@ -103,8 +106,6 @@ class Event(ABC, Generic[EventResponseT]):
         except Exception as error:
             raise EventFunctionTaskError(f"Failed on executing event function: {error}")
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"
 
 
 class DealsOfTheDay(Event[DealOfTheDayProduct]):

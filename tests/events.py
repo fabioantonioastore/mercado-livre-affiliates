@@ -31,7 +31,7 @@ async def main() -> None:
         await mercado_livre_affiliates.register_event_function(
             event=DealsOfTheDay, function=day_offers_test
         )
-        await asyncio.sleep(1000)
+        await asyncio.sleep(100)
 
 
 asyncio.run(main=main())

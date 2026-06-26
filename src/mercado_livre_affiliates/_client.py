@@ -31,16 +31,32 @@ LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
 
 class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates"]):
     def __init__(
-        self
+        self,
+        browser: Browser | None = None
     ) -> None:
         self.__gmail_address: str
         self.__app_password: str
         self.__playwright: Playwright | None = None
-        self.__browser: Browser | None = None
+        self.__browser: Browser | None = browser
         self.__browser_context: BrowserContext | None = None
         self.__event_browser_context: BrowserContext | None = None
         self.__day_offers_event = DealsOfTheDay()
         self.__lightning_offers_event = LightningDeals()
+    
+    async def __aenter__(self) -> Self:
+        await self.__start()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> bool | None:
+        await self.__stop()
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}()"
     
     @overload
     async def register_event_function(
@@ -277,17 +293,3 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
             raise ValueError("Application not started yet")
         return self.__playwright
 
-    async def __aenter__(self) -> Self:
-        await self.__start()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-    ) -> bool | None:
-        await self.__stop()
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}()"

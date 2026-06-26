@@ -20,9 +20,9 @@ class DealOfTheDayProduct(EventResponse):
     image_url: str
     rating: float
     total_reviews: int
+    categories: list[str]
     old_price: Price
     current_price: Price
-    discount_factor: float
 
 
 @dataclass
@@ -32,7 +32,8 @@ class LightningDealProduct(EventResponse):
     image_url: str
     rating: float
     total_reviews: int
+    categories: list[str]
     old_price: Price
     current_price: Price
-    discount_factor: float
     expires_in: datetime
+

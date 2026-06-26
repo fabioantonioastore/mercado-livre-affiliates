@@ -11,6 +11,20 @@ class Gmail(AbstractAsyncContextManager["Gmail"]):
         self.__app_password = app_password.replace(" ", "")
         self.__connection: aioimaplib.IMAP4_SSL | None = None
 
+    async def __aenter__(self) -> "Gmail":
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        await self.__close()
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(gmail_address={self.gmail_address}, app_password=*)"
+
     @property
     def gmail_address(self) -> str:
         return self.__gmail_address
@@ -79,16 +93,3 @@ class Gmail(AbstractAsyncContextManager["Gmail"]):
             finally:
                 self.__connection = None
 
-    async def __aenter__(self) -> "Gmail":
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        await self.__close()
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(gmail_address={self.gmail_address}, app_password=*)"
