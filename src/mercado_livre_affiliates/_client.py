@@ -30,10 +30,7 @@ LINK_BUILDER_URL = "https://www.mercadolivre.com.br/afiliados/linkbuilder"
 
 
 class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates"]):
-    def __init__(
-        self,
-        browser: Browser | None = None
-    ) -> None:
+    def __init__(self, browser: Browser | None = None) -> None:
         self.__gmail_address: str
         self.__app_password: str
         self.__playwright: Playwright | None = None
@@ -42,7 +39,7 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         self.__event_browser_context: BrowserContext | None = None
         self.__day_offers_event = DealsOfTheDay()
         self.__lightning_offers_event = LightningDeals()
-    
+
     async def __aenter__(self) -> Self:
         await self.__start()
         return self
@@ -57,7 +54,7 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
-    
+
     @overload
     async def register_event_function(
         self,
@@ -79,9 +76,16 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
     async def register_event_function(
         self,
         event: type[DealsOfTheDay] | type[LightningDeals],
-        function:
-            Callable[["MercadoLivreAffiliates", DealOfTheDayProduct], Coroutine[Any, Any, None]] |
-            Callable[["MercadoLivreAffiliates", LightningDealProduct], Coroutine[Any, Any, None]],
+        function: (
+            Callable[
+                ["MercadoLivreAffiliates", DealOfTheDayProduct],
+                Coroutine[Any, Any, None],
+            ]
+            | Callable[
+                ["MercadoLivreAffiliates", LightningDealProduct],
+                Coroutine[Any, Any, None],
+            ]
+        ),
     ) -> None:
         if issubclass(event, DealsOfTheDay):
             self.__day_offers_event.register_event_function(function=function)  # type: ignore[arg-type]
@@ -242,7 +246,7 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         if self.__event_browser_context is None:
             self.__event_browser_context = await self.__create_browser_context()
         return self.__event_browser_context
-    
+
     async def __create_browser(self) -> Browser:
         playwright = await self.__get_playwright()
         return await playwright.chromium.launch(
@@ -258,11 +262,11 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         if self.__browser is None:
             self.__browser = await self.__create_browser()
         return await self.__browser.new_context(
-                viewport={"width": 1280, "height": 720},
-                user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
-                locale="pt-BR",
-                timezone_id="America/Sao_Paulo",
-            )
+            viewport={"width": 1280, "height": 720},
+            user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/637.36 Chrome/120 Safari/537.36",
+            locale="pt-BR",
+            timezone_id="America/Sao_Paulo",
+        )
 
     async def __start(self) -> None:
         self.__playwright = await async_playwright().start()
@@ -292,4 +296,3 @@ class MercadoLivreAffiliates(AbstractAsyncContextManager["MercadoLivreAffiliates
         if self.__playwright is None:
             raise ValueError("Application not started yet")
         return self.__playwright
-

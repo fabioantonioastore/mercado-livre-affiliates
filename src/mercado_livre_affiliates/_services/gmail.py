@@ -92,4 +92,3 @@ class Gmail(AbstractAsyncContextManager["Gmail"]):
                 pass
             finally:
                 self.__connection = None
-

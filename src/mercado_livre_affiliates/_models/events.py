@@ -36,4 +36,3 @@ class LightningDealProduct(EventResponse):
     old_price: Price
     current_price: Price
     expires_in: datetime
-

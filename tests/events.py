@@ -1,7 +1,12 @@
 import asyncio
 
 from mercado_livre_affiliates import MercadoLivreAffiliates
-from mercado_livre_affiliates.events import DealsOfTheDay, LightningDeals, DealOfTheDayProduct, LightningDealProduct
+from mercado_livre_affiliates.events import (
+    DealsOfTheDay,
+    LightningDeals,
+    DealOfTheDayProduct,
+    LightningDealProduct,
+)
 
 
 async def day_offers_test(
@@ -23,8 +28,7 @@ async def lightining_offers_test(
 
 
 async def main() -> None:
-    async with MercadoLivreAffiliates(
-    ) as mercado_livre_affiliates:
+    async with MercadoLivreAffiliates() as mercado_livre_affiliates:
         await mercado_livre_affiliates.register_event_function(
             event=LightningDeals, function=lightining_offers_test
         )

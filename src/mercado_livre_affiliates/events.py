@@ -7,7 +7,10 @@ from playwright.async_api import BrowserContext
 
 from .exceptions import EventFunctionTaskError, EventNotStartedError, EventLogicError
 from ._models import LightningDealProduct, DealOfTheDayProduct, EventResponseT
-from ._utils.events import web_scraping_deals_of_the_day_products, web_scraping_lightning_deals_products
+from ._utils.events import (
+    web_scraping_deals_of_the_day_products,
+    web_scraping_lightning_deals_products,
+)
 
 if TYPE_CHECKING:
     from ._client import MercadoLivreAffiliates
@@ -20,7 +23,9 @@ DayDealMaxDurationDays = 1
 class Event(ABC, Generic[EventResponseT]):
     def __init__(self) -> None:
         self.__event_functions: set[
-            Callable[[MercadoLivreAffiliates, EventResponseT], Coroutine[Any, Any, None]]
+            Callable[
+                [MercadoLivreAffiliates, EventResponseT], Coroutine[Any, Any, None]
+            ]
         ] = set()
         self.__started = False
         self.__event_functions_tasks: set[asyncio.Task[None]] = set()
@@ -30,7 +35,7 @@ class Event(ABC, Generic[EventResponseT]):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}()"
-    
+
     @property
     def total_event_functions(self) -> int:
         return len(self.__event_functions)
@@ -91,7 +96,9 @@ class Event(ABC, Generic[EventResponseT]):
                         coro=event_function(client, event_response)
                     )
                     self.__event_functions_tasks.add(event_function_task)
-                    event_function_task.add_done_callback(self.__finish_event_function_task)
+                    event_function_task.add_done_callback(
+                        self.__finish_event_function_task
+                    )
             if self._event.is_set():
                 self._event.clear()
 
@@ -105,7 +112,6 @@ class Event(ABC, Generic[EventResponseT]):
             pass
         except Exception as error:
             raise EventFunctionTaskError(f"Failed on executing event function: {error}")
-
 
 
 class DealsOfTheDay(Event[DealOfTheDayProduct]):
@@ -144,10 +150,14 @@ class LightningDeals(Event[LightningDealProduct]):
         finally:
             await page.close()
             if last_product_expires_in is None:
-                target = datetime.now(tz=timezone.utc) + timedelta(seconds=LightningDealMaxDurationSeconds)
+                target = datetime.now(tz=timezone.utc) + timedelta(
+                    seconds=LightningDealMaxDurationSeconds
+                )
                 delay = (target - datetime.now(tz=timezone.utc)).total_seconds()
                 await asyncio.sleep(delay=delay)
             else:
-                delay = (last_product_expires_in - datetime.now(tz=timezone.utc)).total_seconds()
+                delay = (
+                    last_product_expires_in - datetime.now(tz=timezone.utc)
+                ).total_seconds()
                 await asyncio.sleep(delay=delay)
             self._event.set()

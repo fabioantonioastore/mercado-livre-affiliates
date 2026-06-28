@@ -12,13 +12,13 @@ class Horns(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Horns"
-    
+
 
 class Lighting(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Lighting"
-    
+
 
 class PortableChargers(BaseOfferCategory):
     @classmethod
@@ -30,7 +30,7 @@ class SeatCovers(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Seat Covers"
-    
+
 
 class SeatBeltPads(BaseOfferCategory):
     @classmethod
@@ -1509,6 +1509,7 @@ class TensionerKits(BaseOfferCategory):
 class RollersAndTensioners(BaseOfferCategory):
     tensioner_kits = TensionerKits
     tensioner_pulleys = TensionerPulleys
+
     @classmethod
     def value(cls) -> str:
         return "Rollers and Tensioners"
@@ -2058,7 +2059,7 @@ class Heating(BaseOfferCategory):
 class Buttons(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
-        return "Buttons" 
+        return "Buttons"
 
 
 class CompressorGaskets(BaseOfferCategory):
@@ -2807,7 +2808,7 @@ class Interior(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Interior"
-    
+
 
 class ParkingSensors(BaseOfferCategory):
     @classmethod
@@ -2874,8 +2875,6 @@ class BackupCameras(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Backup Cameras"
-
-
 
 
 class Covers(BaseOfferCategory):
