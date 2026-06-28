@@ -4,6 +4,7 @@ from mercado_livre_affiliates import MercadoLivreAffiliates
 
 
 async def main() -> None:
+    print(MercadoLivreAffiliates.__name__)
     async with MercadoLivreAffiliates(
     ) as mercado_livre_affiliates:
         mercado_livre_affiliates.set_user_account(gmail_address="astore.a.fabio@gmail.com", app_password="*")

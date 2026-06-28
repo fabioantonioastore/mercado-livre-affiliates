@@ -1,12 +1,12 @@
-from typing_extensions import Self
+from typing import Self
 
-from ._offer_categories import Games
-from ._offer_categories import AntiquesAndCollectibles
+from ._offer_categories import Games, AntiquesAndCollectibles, VehicleAccessories
 
 
 
 
 class OfferCategory:
+    vehicle_accessories = VehicleAccessories
     antiques_and_collectibles = AntiquesAndCollectibles
     games = Games
 
