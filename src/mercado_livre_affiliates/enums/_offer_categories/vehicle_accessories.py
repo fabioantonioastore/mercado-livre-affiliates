@@ -2,6 +2,12 @@ from .base import BaseOfferCategory
 from .commom import Others
 
 
+class Batteries(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Batteries"
+
+
 class Horns(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
@@ -24,39 +30,667 @@ class SeatCovers(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Seat Covers"
+    
+
+class SeatBeltPads(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Seat Belt Pads"
+
+
+class InteriorTuningFootpegs(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Footpegs"
+
+
+class InteriorTuning(BaseOfferCategory):
+    footpegs = InteriorTuningFootpegs
+    seat_belt_pads = SeatBeltPads
+
+    @classmethod
+    def value(cls) -> str:
+        return "Interior Tuning"
+
+
+class ExteriorTuning(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Exterior Tuning"
+
+
+class SheetMetalPaints(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Sheet Metal Paints"
+
+
+class Paints(BaseOfferCategory):
+    others = Others
+    sheet_metal_paints = SheetMetalPaints
+
+    @classmethod
+    def value(cls) -> str:
+        return "Paints"
+
+
+class LEDBulbs(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "LED Bulbs"
+
+
+class XenonBulbs(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Xenon bulbs"
+
+
+class LightBulbs(BaseOfferCategory):
+    xenon_bulbs = XenonBulbs
+    led_bulbs = LEDBulbs
+
+    @classmethod
+    def value(cls) -> str:
+        return "Light bulbs"
+
+
+class LightingTailLights(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Tail Lights"
+
+
+class LEDBars(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "LED bars"
+
+
+class AngelEyes(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Angel Eyes"
+
+
+class TuningLighting(BaseOfferCategory):
+    angel_eyes = AngelEyes
+    led_bars = LEDBars
+    tail_lights = LightingTailLights
+    light_bulbs = LightBulbs
+    others = Others
+
+    @classmethod
+    def value(cls) -> str:
+        return "Lighting"
+
+
+class ChromePlatedParts(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Chrome-plated parts"
+
+
+class Stickers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Stickers"
+
+
+class CarWrapping(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Car Wrapping"
+
+
+class MatteBlackDecals(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Matte Black Decals"
+
+
+class DecalsAndStickers(BaseOfferCategory):
+    matte_black_decals = MatteBlackDecals
+    car_wrapping = CarWrapping
+    stickers = Stickers
+
+    @classmethod
+    def value(cls) -> str:
+        return "Decals and Stickers"
 
 
 class Tuning(BaseOfferCategory):
+    decals_and_stickers = DecalsAndStickers
+    chrome_plated_parts = ChromePlatedParts
+    tuning_lighting = TuningLighting
+    paints = Paints
+    exterior_tuning = ExteriorTuning
+    interior_tuning = InteriorTuning
+
     @classmethod
     def value(cls) -> str:
         return "Tuning"
 
 
+class Screenless(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Screenless"
+
+
+class WithScreen(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "With Screen"
+
+
+class Stereos(BaseOfferCategory):
+    with_screen = WithScreen
+    screenless = Screenless
+
+    @classmethod
+    def value(cls) -> str:
+        return "Stereos"
+
+
+class FMTransmitters(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "FM Transmitters"
+
+
+class RadioWiringHarnesses(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Radio Wiring Harnesses"
+
+
+class SiresAccessories(BaseOfferCategory):
+    radio_wiring_harnesses = RadioWiringHarnesses
+    fm_transmitters = FMTransmitters
+
+    @classmethod
+    def value(cls) -> str:
+        return "Accessories"
+
+
+class Sires(BaseOfferCategory):
+    accessories = SiresAccessories
+    stereos = Stereos
+
+    @classmethod
+    def value(cls) -> str:
+        return "Sires"
+
+
+class AmplifierModules(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Amplifier Modules"
+
+
+class Interfaces(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Interfaces"
+
+
+class Drivers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Drivers"
+
+
+class CablesAndConnectors(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Cables and Connectors"
+
+
+class Speakers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Speakers"
+
+
 class CarAudio(BaseOfferCategory):
+    speakers = Speakers
+    cables_and_connectors = CablesAndConnectors
+    drivers = Drivers
+    interfaces = Interfaces
+    amplifier_modules = AmplifierModules
+    sires = Sires
+
     @classmethod
     def value(cls) -> str:
         return "Car Audio"
 
 
+class VehicleSafetySteeringWheelLocks(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Steering Wheel Locks"
+
+
+class VehicleSafetyLatchesAndElasticBands(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Latches and Elastic Bands"
+
+
+class WheelNuts(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Wheel Nuts"
+
+
+class Breathalyzers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Breathalyzers"
+
+
+class ControllerShells(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Controller Shells"
+
+
+class CarAlarms(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Car Alarms"
+
+
+class AlarmsAndAccessories(BaseOfferCategory):
+    car_alarms = CarAlarms
+    controller_shells = ControllerShells
+
+    @classmethod
+    def value(cls) -> str:
+        return "Alarms and Accessories"
+
+
 class VehicleSafety(BaseOfferCategory):
+    alarms_and_accessories = AlarmsAndAccessories
+    breathalyzers = Breathalyzers
+    wheel_nuts = WheelNuts
+    latches_and_elastic_bands = VehicleSafetyLatchesAndElasticBands
+    steering_wheel_locks = VehicleSafetySteeringWheelLocks
+
     @classmethod
     def value(cls) -> str:
         return "Vehicle Safety"
 
 
+class MotorcycleWheels(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Motorcycle Wheels"
+
+
+class TirePatchStickers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Tire Patch Stickers"
+
+
 class Wheels(BaseOfferCategory):
+    tire_patch_stickers = TirePatchStickers
+    motorcycle_wheels = MotorcycleWheels
+
     @classmethod
     def value(cls) -> str:
         return "Wheels"
 
 
+class MotorcycleTires(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Motorcycle Tires"
+
+
+class BicycleTires(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Bicycle Tires"
+
+
+class CarAndLightTruckTires(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Car and Light Truck Tires"
+
+
 class TiresAndAccessories(BaseOfferCategory):
+    car_and_light_truck_tires = CarAndLightTruckTires
+    bicycle_tires = BicycleTires
+    motorcycle_tires = MotorcycleTires
+
     @classmethod
     def value(cls) -> str:
         return "Tires and Accessories"
 
 
+class GearShiftLever(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Gear Shift Lever"
+
+
+class DriveKit(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Drive Kit"
+
+
+class Gears(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Gears"
+
+
+class ClutchDisc(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Clutch Disc"
+
+
+class ClutchBell(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Clutch Bell"
+
+
+class TransmissionClutches(BaseOfferCategory):
+    clutch_bell = ClutchBell
+    clutch_disc = ClutchDisc
+
+    @classmethod
+    def value(cls) -> str:
+        return "Clutches"
+
+
+class GearSelectorShafts(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Gear Selector Shafts"
+
+
+class Crowns(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Crowns"
+
+
+class Gearboxes(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Gearboxes"
+
+
+class MotorcycleAndATVPartsTransmission(BaseOfferCategory):
+    gearboxes = Gearboxes
+    crowns = Crowns
+    gear_selector_shafts = GearSelectorShafts
+    clutches = TransmissionClutches
+    gears = Gears
+    drive_kit = DriveKit
+    gear_shift_lever = GearShiftLever
+
+    @classmethod
+    def value(cls) -> str:
+        return "Transmission"
+
+
+class Stators(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Stators"
+
+
+class TransmissionChains(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Transmission Chains"
+
+
+class Cylinders(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Cylinders"
+
+
+class Carburetors(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Carburetors"
+
+
+class MotorcycleAndATVPartsEngine(BaseOfferCategory):
+    carburetors = Carburetors
+    cylinders = Cylinders
+    transmission_chains = TransmissionChains
+    stators = Stators
+
+    @classmethod
+    def value(cls) -> str:
+        return "Engine"
+
+
+class TurnSignals(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Turn signals"
+
+
+class Flashlights(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Flashlights"
+
+
+class LightingHeadlights(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Headlights"
+
+
+class MotorcycleAndATVPartsLighting(BaseOfferCategory):
+    headlights = LightingHeadlights
+    flashlights = Flashlights
+    turn_signals = TurnSignals
+
+    @classmethod
+    def value(cls) -> str:
+        return "Lighting"
+
+
+class MotorcycleAndATVPartsIgnition(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Ignition"
+
+
+class MotorcycleAndATVPartsFilters(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Filters"
+
+
+class RearviewMirrors(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Rearview Mirrors"
+
+
+class Silencers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Silencers"
+
+
+class ExhaustSystemsAndMufflersExhaustSystems(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Exhaust Systems"
+
+
+class ExhaustSystemsAndMufflers(BaseOfferCategory):
+    exhaust_systems = ExhaustSystemsAndMufflersExhaustSystems
+    silencers = Silencers
+
+    @classmethod
+    def value(cls) -> str:
+        return "Exhaust Systems and Mufflers"
+
+
+class TankLids(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Tank Lids"
+
+
+class LicensePlateHolders(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "License Plate Holders"
+
+
+class FenderBrackets(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Fender Brackets"
+
+
+class RearWheelOilSeals(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Rear Wheel Oil Seals"
+
+
+class SkidPlates(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Skid Plates"
+
+
+class SideCovers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Side Covers"
+
+
+class Fairing(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Fairing"
+
+
+class MotorcyclePlastics(BaseOfferCategory):
+    fairing = Fairing
+    side_covers = SideCovers
+
+    @classmethod
+    def value(cls) -> str:
+        return "Motorcycle Plastics"
+
+
+class Footpegs(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Footpegs"
+
+
+class Panels(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Panels"
+
+
+class Grips(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Grips"
+
+
+class HandlebarsAndComponents(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Handlebars and Components"
+
+
+class ChassisBrakes(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Brakes"
+
+
+class WheelAxle(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Wheel Axle"
+
+
+class ChassisKeys(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Keys"
+
+
+class ChassisSawhorses(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Sawhorses"
+
+
+class ChassisCables(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Cables"
+
+
+class ChassisShockAbsorbers(BaseOfferCategory):
+    @classmethod
+    def value(cls) -> str:
+        return "Shock absorbers"
+
+
+class Chassis(BaseOfferCategory):
+    shock_absorbers = ChassisShockAbsorbers
+    cables = ChassisCables
+    sawhorses = ChassisSawhorses
+    keys = ChassisKeys
+    wheel_axle = WheelAxle
+    brakes = ChassisBrakes
+    handlebars_and_components = HandlebarsAndComponents
+    grips = Grips
+    others = Others
+    panels = Panels
+    footpegs = Footpegs
+    motorcycle_plastics = MotorcyclePlastics
+    skid_plates = SkidPlates
+    rear_wheel_oil_seals = RearWheelOilSeals
+    fender_brackets = FenderBrackets
+    license_plate_holders = LicensePlateHolders
+    tank_lids = TankLids
+
+    @classmethod
+    def value(cls) -> str:
+        return "Chassis"
+
+
 class MotorcycleAndATVParts(BaseOfferCategory):
+    batteries = Batteries
+    chassis = Chassis
+    exhaust_systems_and_mufflers = ExhaustSystemsAndMufflers
+    rearview_mirrors = RearviewMirrors
+    filters = MotorcycleAndATVPartsFilters
+    ignition = MotorcycleAndATVPartsIgnition
+    lighting = MotorcycleAndATVPartsLighting
+    engine = MotorcycleAndATVPartsEngine
+    transmission = MotorcycleAndATVPartsTransmission
+
     @classmethod
     def value(cls) -> str:
         return "Motorcycle and ATV Parts"
@@ -474,10 +1108,10 @@ class Security(BaseOfferCategory):
         return "Security"
 
 
-class DefensiveMidfielders(BaseOfferCategory):
+class SteeringWheels(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
-        return "Defensive Midfielders"
+        return "Steering Wheels"
 
 
 class Pedals(BaseOfferCategory):
@@ -580,7 +1214,7 @@ class InteriorParts(BaseOfferCategory):
     gear_shift_knob = GearShiftKnob
     door_panels = DoorPanels
     pedals = Pedals
-    defensive_midfielders = DefensiveMidfielders
+    steering_wheels = SteeringWheels
 
     @classmethod
     def value(cls) -> str:
@@ -1561,12 +2195,6 @@ class Bodywork(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Bodywork"
-
-
-class Batteries(BaseOfferCategory):
-    @classmethod
-    def value(cls) -> str:
-        return "Batteries"
 
 
 class CarAndPickupTruckParts(BaseOfferCategory):
