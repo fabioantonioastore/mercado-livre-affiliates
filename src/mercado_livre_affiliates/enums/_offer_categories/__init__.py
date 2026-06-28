@@ -1,5 +1,5 @@
-from .games import Games
-from .antiques_and_collectibles import AntiquesAndCollectibles
+from .base import BaseOfferCategory
 from .vehicle_accessories import VehicleAccessories
 
-__all__ = ["Games", "AntiquesAndCollectibles", "VehicleAccessories"]
+
+__all__ = ["BaseOfferCategory", "VehicleAccessories"]
