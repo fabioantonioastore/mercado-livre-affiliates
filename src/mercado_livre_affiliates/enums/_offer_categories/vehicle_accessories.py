@@ -110,24 +110,24 @@ class CarAndPickupTruckAccessories(BaseOfferCategory):
 
 
 class VehicleAccessories(BaseOfferCategory):
-    car_and_pickup_truck_accessories = CarAndPickupTruckAccessories
-    motorcycle_and_atv_accessories = MotorcycleAndATVAccessories
-    marine_accessories = MarineAccessories
-    heavy_duty_accessories = HeavyDutyAccessories
-    vehicle_tools = VehicleTools
-    automotive_cleaning = AutomotiveCleaning
-    lubricants_and_fluids = LubricantsAndFluids
-    gps_navigators_for_vehicles = GPSNavigatorsForVehicles
-    performance = Performance
-    marine_parts = MarineParts
-    car_and_pickup_truck_parts = CarAndPickupTruckParts
-    heavy_duty_parts = HeavyDutyParts
-    motorcycle_and_atv_parts = MotorcycleAndATVParts
-    tires_and_accessories = TiresAndAccessories
-    wheels = Wheels
-    vehicle_safety = VehicleSafety
-    car_audio = CarAudio
-    tuning = Tuning
+    CAR_AND_PICKUP_TRUCK_ACCESSORIES = CarAndPickupTruckAccessories
+    MOTORCYCLE_AND_ATV_ACCESSORIES = MotorcycleAndATVAccessories
+    MARINE_ACCESSORIES = MarineAccessories
+    HEAVY_DUTY_ACCESSORIES = HeavyDutyAccessories
+    VEHICLE_TOOLS = VehicleTools
+    AUTOMOTIVE_CLEANING = AutomotiveCleaning
+    LUBRICANTS_AND_FLUIDS = LubricantsAndFluids
+    GPS_NAVIGATORS_FOR_VEHICLES = GPSNavigatorsForVehicles
+    PERFORMANCE = Performance
+    MARINE_PARTS = MarineParts
+    CAR_AND_PICKUP_TRUCK_PARTS = CarAndPickupTruckParts
+    HEAVY_DUTY_PARTS = HeavyDutyParts
+    MOTORCYCLE_AND_ATV_PARTS = MotorcycleAndATVParts
+    TIRES_AND_ACCESSORIES = TiresAndAccessories
+    WHEELS = Wheels
+    VEHICLE_SAFETY = VehicleSafety
+    CAR_AUDIO = CarAudio
+    TUNING = Tuning
 
     @classmethod
     def value(cls) -> str:
