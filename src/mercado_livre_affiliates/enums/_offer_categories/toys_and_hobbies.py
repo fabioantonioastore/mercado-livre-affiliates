@@ -1,4 +1,5 @@
 from .base import BaseOfferCategory
+from .common import Others
 
 
 class AlbumsAndStickers(BaseOfferCategory):
@@ -17,12 +18,6 @@ class PlushToys(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Plush Toys"
-
-
-class Others(BaseOfferCategory):
-    @classmethod
-    def value(cls) -> str:
-        return "Others"
 
 
 class MiniVehiclesAndBicycles(BaseOfferCategory):

@@ -358,6 +358,130 @@ PRODUCTS_DEALS_BY_CATEGORIES: dict[str, set[str]] = {
     "https://www.mercadolivre.com.br/ofertas?category=MLB1831": {
         OfferCategory.TOYS_AND_HOBBIES.value(),
         OfferCategory.TOYS_AND_HOBBIES.ALBUMS_AND_STICKERS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1451": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.FASHION_ACCESSORIES.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB455528": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.OUTERWEAR.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB188064": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.BERMUDA_SHORTS_AND_SHORTS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB3112": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.BLOUSES.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB23262": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.FOOTWEAR.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB188065": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.PANTS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB107292": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.SHIRTS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB31447": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.T_SHIRTS_AND_TANK_TOPS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB271862": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.WORK_AND_SCHOOL_ATTIRE.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB271219": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.CLOTHING_SET_KITS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB278018": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.LEGGINGS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB27250": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.OVERALLS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1457": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.SUITCASES_AND_BAGS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB270215": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.ACTIVEWEAR.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB430391": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.BEACHWEAR.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB108786": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.INTIMATE_APPARE_AND_LINGERIE.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB5366": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.BABY_CLOTHES.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB185489": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.SKIRTS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB108831": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.SUITS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB108704": {
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.value(),
+        OfferCategory.FOOTWEAR_CLOTHING_AND_BAGS.DRESSES.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1613": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.RESTROOMS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB438928": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.BEDS_MATTRESSES_AND_ACCESSORIES.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1618": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.KITCHEN.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB264051": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.HOME_CARE_AND_LAUNDRY.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1631": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.ORNAMENTS_AND_HOME_DECOR.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1582": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.RESIDENTIAL_LIGHTING.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB1621": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.GARDEN_AND_OUTDOORS.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB436380": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.HOME_FURNITURE.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB436414": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.HOME_ORGANIZATION.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB7069": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.HOME_SECURITY.value()
+    },
+    "https://www.mercadolivre.com.br/ofertas?category=MLB436246": {
+        OfferCategory.HOME_FURNITURE_AND_DECOR.value(),
+        OfferCategory.HOME_FURNITURE_AND_DECOR.HOME_TEXTILES_AND_DECOR.value()
     }
 }
 

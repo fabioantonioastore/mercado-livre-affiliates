@@ -8,7 +8,9 @@ from ._offer_categories import (
     ArtSuppliesStationeryAndHaberdashery,
     Babies,
     BeautyAndPersonalCare,
-    ToysAndHobbies
+    ToysAndHobbies,
+    FootwearClothingAndBags,
+    HomeFurnitureAndDecor
 )
 
 
@@ -21,6 +23,8 @@ class OfferCategory:
     BABIES = Babies
     BEAUTY_AND_PERSONAL_CARE = BeautyAndPersonalCare
     TOYS_AND_HOBBIES = ToysAndHobbies
+    FOOTWEAR_CLOTHING_AND_BAGS = FootwearClothingAndBags
+    HOME_FURNITURE_AND_DECOR = HomeFurnitureAndDecor
 
     def __new__(cls) -> Self:
         raise RuntimeError("This class cannot be instanciated")
