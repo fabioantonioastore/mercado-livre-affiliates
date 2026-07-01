@@ -57,4 +57,3 @@ class HomeAppliances(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Home Appliances"
-    

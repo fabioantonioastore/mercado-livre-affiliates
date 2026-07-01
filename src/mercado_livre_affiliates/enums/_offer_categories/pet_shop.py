@@ -62,4 +62,3 @@ class PetShop(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Pet Shop"
-    

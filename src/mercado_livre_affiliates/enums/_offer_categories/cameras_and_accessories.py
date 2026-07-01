@@ -55,4 +55,3 @@ class CamerasAndAccessories(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Cameras and Accessories"
-    

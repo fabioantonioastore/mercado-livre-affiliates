@@ -4,8 +4,7 @@ from .base import BaseOfferCategory
 class ParlorGames(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
-        return "Parlor Games" \
-        ""
+        return "Parlor Games" ""
 
 
 class Volleyball(BaseOfferCategory):
@@ -175,4 +174,3 @@ class SportsAndFitness(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Sports and Fitness"
-    

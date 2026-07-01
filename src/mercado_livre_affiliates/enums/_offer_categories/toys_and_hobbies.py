@@ -155,4 +155,3 @@ class ToysAndHobbies(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Toys and Hobbies"
-    

@@ -59,5 +59,5 @@ __all__ = [
     "BooksMagazinesAndComics",
     "MoreCategories",
     "PetShop",
-    "Health"
+    "Health",
 ]

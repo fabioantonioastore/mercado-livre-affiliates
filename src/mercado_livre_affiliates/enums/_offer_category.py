@@ -27,7 +27,7 @@ from ._offer_categories import (
     BooksMagazinesAndComics,
     MoreCategories,
     PetShop,
-    Health
+    Health,
 )
 
 

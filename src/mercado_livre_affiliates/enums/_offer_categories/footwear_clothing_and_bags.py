@@ -148,4 +148,3 @@ class FootwearClothingAndBags(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Footwear, Clothing, and Bags"
-    

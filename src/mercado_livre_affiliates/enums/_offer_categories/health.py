@@ -57,4 +57,3 @@ class Health(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Health"
-    

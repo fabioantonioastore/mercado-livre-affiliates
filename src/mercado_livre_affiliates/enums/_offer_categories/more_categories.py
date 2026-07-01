@@ -20,4 +20,3 @@ class MoreCategories(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "More Categories"
-    

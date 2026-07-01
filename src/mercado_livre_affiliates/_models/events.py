@@ -6,8 +6,16 @@ from . import BaseModel
 from . import Price
 
 
+@dataclass
 class EventResponse(BaseModel):
-    pass
+    title: str
+    url: str
+    image_url: str
+    rating: float
+    total_reviews: int
+    categories: set[str]
+    old_price: Price
+    current_price: Price
 
 
 EventResponseT = TypeVar("EventResponseT", bound=EventResponse)
@@ -15,24 +23,9 @@ EventResponseT = TypeVar("EventResponseT", bound=EventResponse)
 
 @dataclass
 class DealOfTheDayProduct(EventResponse):
-    title: str
-    url: str
-    image_url: str
-    rating: float
-    total_reviews: int
-    categories: list[str]
-    old_price: Price
-    current_price: Price
+    pass
 
 
 @dataclass
 class LightningDealProduct(EventResponse):
-    title: str
-    url: str
-    image_url: str
-    rating: float
-    total_reviews: int
-    categories: list[str]
-    old_price: Price
-    current_price: Price
     expires_in: datetime

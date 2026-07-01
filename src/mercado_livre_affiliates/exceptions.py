@@ -18,6 +18,10 @@ class GenerateAffiliateLinkError(MercadoLivreAffiliatesException):
     pass
 
 
+class SessionAlreadyExistError(MercadoLivreAffiliatesException):
+    pass
+
+
 class EventFunctionTaskError(MercadoLivreAffiliatesException):
     pass
 

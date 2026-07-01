@@ -57,4 +57,3 @@ class JewelryAndWatches(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Jewelry and Watches"
-    

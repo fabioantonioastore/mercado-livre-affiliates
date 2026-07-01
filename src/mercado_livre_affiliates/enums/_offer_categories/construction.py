@@ -76,4 +76,3 @@ class Construction(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Construction"
-    

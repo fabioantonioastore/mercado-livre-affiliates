@@ -90,4 +90,3 @@ class ElectronicsAudioAndVideo(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Electronics, Audio and Video"
-    

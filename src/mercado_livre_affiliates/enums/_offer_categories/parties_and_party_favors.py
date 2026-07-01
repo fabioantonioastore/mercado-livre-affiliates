@@ -64,4 +64,3 @@ class PartiesAndPartyFavors(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Parties and Party Favors"
-    

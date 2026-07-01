@@ -92,4 +92,3 @@ class IndustryAndCommerce(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Industry and Commerce"
-    

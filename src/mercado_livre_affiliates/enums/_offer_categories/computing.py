@@ -125,4 +125,3 @@ class Computing(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Computing"
-    

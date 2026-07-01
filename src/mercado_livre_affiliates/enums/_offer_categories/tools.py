@@ -64,4 +64,3 @@ class Tools(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Tools"
-    

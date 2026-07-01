@@ -83,4 +83,3 @@ class MusicalInstruments(BaseOfferCategory):
     @classmethod
     def value(cls) -> str:
         return "Musical Instruments"
-    
