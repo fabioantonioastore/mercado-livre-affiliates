@@ -1,5 +1,4 @@
 from .base import BaseOfferCategory
-from .common import Others
 
 
 class HomeTextilesAndDecor(BaseOfferCategory):
@@ -78,7 +77,6 @@ class HomeFurnitureAndDecor(BaseOfferCategory):
     GARDEN_AND_OUTDOORS = GardenAndOutdoors
     HOME_FURNITURE = HomeFurniture
     HOME_ORGANIZATION = HomeOrganization
-    OTHERS = Others
     HOME_SECURITY = HomeSecurity
     HOME_TEXTILES_AND_DECOR = HomeTextilesAndDecor
 
